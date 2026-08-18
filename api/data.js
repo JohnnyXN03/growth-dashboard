@@ -11,8 +11,10 @@ const SESSION_MAX_AGE_MS = 30 * 24 * 60 * 60 * 1000; // 30 days
 function verifyToken(token) {
   if (!token) return null;
   const parts = token.split('.');
-  if (parts.length !== 3) return null;
-  const [name, timestamp, signature] = parts;
+  if (parts.length < 3) return null;
+  const signature = parts.pop();
+  const timestamp = parts.pop();
+  const name = parts.join('.');
   const expected = crypto
     .createHmac('sha256', process.env.SESSION_SECRET)
     .update(`${name}.${timestamp}`)
